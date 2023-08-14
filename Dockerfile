@@ -19,11 +19,18 @@ RUN set -ex \
 
 FROM docker.io/alpine
 
-COPY --from=builder /src/yggdrasil /usr/bin/yggdrasil
-COPY --from=builder /src/yggdrasilctl /usr/bin/yggdrasilctl
-COPY --from=builder /tmp/dumb-init /usr/bin/dumb-init
-COPY entrypoint.sh /usr/bin/entrypoint.sh
+RUN set -ex \
+  && apk --no-cache add bash
 
-VOLUME [ "/etc/yggdrasil" ]
+COPY --from=builder /src/yggdrasil /usr/bin/
+COPY --from=builder /src/yggdrasilctl /usr/bin/
+COPY --from=builder /tmp/dumb-init /usr/bin/
+COPY entrypoint.sh /usr/bin/
+
+VOLUME [ "/config" ]
+
+RUN chmod +x /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/yggdrasil
+RUN chmod +x /usr/bin/yggdrasilctl
 
 ENTRYPOINT [ "/usr/bin/entrypoint.sh" ]
