@@ -1,0 +1,16 @@
+mikrotik-yggdrasil-go
+=====================
+
+```
+/interface/veth/add name=veth1 address=172.17.0.2/24 gateway=172.17.0.1
+
+/interface/bridge/add name=containers
+/ip/address/add address=172.17.0.1/24 interface=containers
+/interface/bridge/port add bridge=containers interface=veth1
+
+# /ip/firewall/nat/add chain=srcnat action=masquerade src-address=172.17.0.0/24
+
+/container/mounts/add name=yggdrasil src=usb1/etc/yggdrasil dst=/config
+/container/config/set registry-url=https://registry-1.docker.io tmpdir=usb1/pull
+/container/add remote-image=litew/mikrotik-yggdrasil-go:0.4.7 interface=veth1 root-dir=usb1/yggdrasil mounts=yggdrasil
+```
